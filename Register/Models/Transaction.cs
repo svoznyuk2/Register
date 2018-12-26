@@ -29,11 +29,30 @@ namespace Register.Models
 
 			Items.Remove(item);
 		}
+ 
+       
+        //add code to calculate and sum discount
+        public void RecalculateSubtotal()
+        {
+            decimal savings;
+            decimal PercentAsDecimal;
+            foreach (var item in Items) //check each item for discounts
+            {
+                foreach (var discount in _discounts) //check each discount
+                {
+                    if (item.DepartmentCode.Equals(discount.DepartmentCode)) //look for department match between item and discount
+                    {
+                        PercentAsDecimal = decimal.Multiply(discount.PercentOff, 0.01m);
+                        savings = System.Math.Round(decimal.Multiply(item.Price, PercentAsDecimal), 2); //calculate savings due to discount - round to 2 decimal places
+                        TotalDiscount += savings; //sum the total savings
+                        item.Price = item.Price - savings; //reset the Price to the discounted price
+                    }
+                }
+            }
 
-		public void RecalculateSubtotal()
-		{
-			SubTotal = Items.Sum(x => x.Price);
-		}
+            SubTotal = Items.Sum(x => x.Price);
+        }
 
-	}
+
+    }
 }
